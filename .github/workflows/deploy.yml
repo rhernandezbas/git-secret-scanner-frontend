@@ -22,6 +22,12 @@ jobs:
       - name: Run tests
         run: npm test -- --passWithNoTests
 
+      - name: Build Next.js
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_API_URL: ${{ secrets.BACKEND_URL }}
+
       - name: Build Docker image
         run: docker build -t git-secret-scanner-frontend:latest .
 
