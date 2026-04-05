@@ -1,7 +1,5 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json* .npmrc ./
-RUN npm ci
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
