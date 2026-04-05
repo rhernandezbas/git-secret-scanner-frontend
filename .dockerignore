@@ -1,4 +1,4 @@
-.next
 .git
 *.md
 .env*.local
+node_modules
