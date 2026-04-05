@@ -18,7 +18,9 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci --registry https://registry.npmjs.org
+        run: npm ci
+        env:
+          npm_config_registry: https://registry.npmjs.org
 
       - name: Run tests
         run: npm test -- --passWithNoTests
