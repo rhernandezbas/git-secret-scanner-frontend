@@ -1,0 +1,42 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-and-deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test -- --passWithNoTests
+
+      - name: Build Docker image
+        run: docker build -t git-secret-scanner-frontend:latest .
+
+      - name: Stop existing container
+        run: docker stop gss-frontend 2>/dev/null || true && docker rm gss-frontend 2>/dev/null || true
+
+      - name: Run container
+        run: |
+          docker run -d \
+            --name gss-frontend \
+            --restart unless-stopped \
+            -p 3030:3000 \
+            -e NEXT_PUBLIC_API_URL=${{ secrets.BACKEND_URL || 'http://190.7.234.37:8090' }} \
+            git-secret-scanner-frontend:latest
+
+      - name: Health check
+        run: sleep 5 && curl -sf http://localhost:3030 || exit 1
