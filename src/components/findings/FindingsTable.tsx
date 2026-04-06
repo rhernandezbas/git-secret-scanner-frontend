@@ -43,9 +43,28 @@ export function FindingsTable({ findings, loading, onReload }: FindingsTableProp
         <h2 style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>
           Findings ({filtered.length}{filtered.length !== findings.length ? ` / ${findings.length}` : ""})
         </h2>
-        <Button variant="secondary" onClick={onReload} loading={loading} style={{ fontSize: "11px", padding: "4px 10px" }}>
-          ↻ Reload
-        </Button>
+        <div style={{ display: "flex", gap: "8px" }}>
+          {findings.length > 0 && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `findings-${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              style={{ fontSize: "11px", padding: "4px 10px" }}
+            >
+              ↓ Download JSON
+            </Button>
+          )}
+          <Button variant="secondary" onClick={onReload} loading={loading} style={{ fontSize: "11px", padding: "4px 10px" }}>
+            ↻ Reload
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
